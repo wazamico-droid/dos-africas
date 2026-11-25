@@ -63,11 +63,14 @@ main { max-width: 1200px; margin: 0 auto; padding: 20px; display: flex; flex-dir
 @media (max-width: 880px) { .grid-main { grid-template-columns: 1fr; } }
 
 #africa-map-container { display: flex; justify-content: center; }
-#africa-map-container svg { width: 100%; max-width: 320px; height: auto; }
+#africa-map-container svg { width: 100%; max-width: 280px; height: auto; }
 .region-shape { cursor: pointer; stroke: #0f1115; stroke-width: 1.5; transition: opacity .15s; }
 .region-shape:hover { opacity: 0.8; }
 .region-shape.selected { stroke: #fff; stroke-width: 3; }
-.map-label { font-size: 10px; fill: #0f1115; font-weight: 600; pointer-events: none; }
+.map-label {
+  font-size: 13px; fill: #ffffff; font-weight: 700; pointer-events: none;
+  paint-order: stroke; stroke: rgba(0,0,0,0.55); stroke-width: 3px; stroke-linejoin: round;
+}
 
 .hint { color: var(--text-dim); font-size: 0.85rem; }
 

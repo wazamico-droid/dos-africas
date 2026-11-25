@@ -14,26 +14,63 @@ const state = {
 };
 
 /* ---------------------- MAPA ESQUEMÁTICO DE ÁFRICA ----------------------
-   Nota: es un mapa ESQUEMÁTICO (no cartográficamente preciso) pensado
-   solo para seleccionar región; ver README.md. */
+   Contorno propio, simplificado a mano a partir de la silueta general
+   del continente (no es un trazado de un mapa con derechos de autor:
+   es una forma geográfica genérica aproximada, con fines puramente
+   orientativos). Las 5 regiones se obtienen "recortando" (clip-path)
+   cinco bandas rectangulares con ese mismo contorno, de modo que el
+   borde de cada región sigue siempre la silueta real del continente
+   en vez de ser un bloque suelto. No es cartográficamente preciso
+   (ver README.md), pero sí reconocible como "la forma de África". */
 function renderMap() {
   const container = document.getElementById("africa-map-container");
-  const regionsPath = {
-    north:   "M70,10 L230,10 L230,70 L70,70 Z",
-    west:    "M40,75 L150,75 L140,170 L55,190 L20,130 Z",
-    central: "M155,75 L240,75 L250,175 L150,175 Z",
-    east:    "M245,75 L300,75 L290,220 L255,210 L252,180 Z",
-    south:   "M90,195 L220,180 L230,290 L110,300 Z"
+
+  const outline =
+    "M75,18 L120,8 L160,12 L200,10 L245,22 L280,35 L305,55 L318,65 " +
+    "L352,82 L372,112 L350,142 L312,152 L298,175 L288,205 L278,240 " +
+    "L266,278 L248,318 L228,358 L198,390 L168,400 L140,384 L122,350 " +
+    "L112,298 L100,252 L95,222 L105,195 L92,175 L62,158 L34,160 " +
+    "L16,142 L10,112 L26,86 L48,66 L58,42 Z";
+
+  // Bandas que reparten el rectángulo contenedor entre las 5 regiones;
+  // al recortarlas con el contorno, cada una toma automáticamente la
+  // forma real de "su" trozo de continente.
+  const bands = [
+    { region: "north",   x: 0,   y: 0,   w: 400, h: 100 },
+    { region: "west",    x: 0,   y: 100, w: 150, h: 180 },
+    { region: "central", x: 150, y: 100, w: 110, h: 180 },
+    { region: "east",    x: 260, y: 100, w: 140, h: 180 },
+    { region: "south",   x: 0,   y: 280, w: 400, h: 150 }
+  ];
+
+  const labelPos = {
+    north: [185, 55], west: [65, 165], central: [195, 165],
+    east: [310, 165], south: [190, 350]
   };
-  let svg = `<svg viewBox="0 0 320 310" xmlns="http://www.w3.org/2000/svg">`;
-  Object.keys(regionsPath).forEach(key => {
-    svg += `<path id="region-${key}" class="region-shape" data-region="${key}" d="${regionsPath[key]}" fill="${REGIONS[key].color}"></path>`;
+
+  let svg = `<svg viewBox="0 0 400 430" xmlns="http://www.w3.org/2000/svg">
+    <defs><clipPath id="africa-clip"><path d="${outline}"/></clipPath></defs>
+    <g clip-path="url(#africa-clip)">`;
+  bands.forEach(b => {
+    svg += `<rect id="region-${b.region}" class="region-shape" data-region="${b.region}"
+              x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" fill="${REGIONS[b.region].color}"></rect>`;
+  });
+  svg += `</g>`;
+  // Madagascar: isla independiente, agrupada visualmente con "este"
+  svg += `<ellipse id="region-madagascar" class="region-shape" data-region="east"
+            cx="362" cy="330" rx="10" ry="28" fill="${REGIONS.east.color}"></ellipse>`;
+  // contorno encima, para que se vea limpio el borde del continente
+  svg += `<path d="${outline}" fill="none" stroke="#0f1115" stroke-width="2.5"></path>`;
+  Object.keys(labelPos).forEach(key => {
+    const [lx, ly] = labelPos[key];
+    svg += `<text class="map-label" x="${lx}" y="${ly}" text-anchor="middle">${REGIONS[key].short}</text>`;
   });
   svg += `</svg>`;
   container.innerHTML = svg;
 
-  Object.keys(regionsPath).forEach(key => {
-    document.getElementById(`region-${key}`).addEventListener("click", () => {
+  document.querySelectorAll(".region-shape").forEach(el => {
+    el.addEventListener("click", () => {
+      const key = el.dataset.region;
       state.region = (state.region === key) ? "all" : key;
       updateSelectedRegionStyle();
       renderAll();
@@ -41,19 +78,23 @@ function renderMap() {
   });
   updateSelectedRegionStyle();
 
-  const allBtn = document.createElement("button");
-  allBtn.textContent = "Todo el continente";
-  allBtn.className = "scenario-btn";
-  allBtn.style.marginTop = "10px";
-  allBtn.addEventListener("click", () => { state.region = "all"; updateSelectedRegionStyle(); renderAll(); });
-  container.parentElement.insertBefore(allBtn, container.nextSibling);
+  if (!container.parentElement.querySelector(".map-all-btn")) {
+    const allBtn = document.createElement("button");
+    allBtn.textContent = "Todo el continente";
+    allBtn.className = "scenario-btn map-all-btn";
+    allBtn.style.marginTop = "10px";
+    allBtn.addEventListener("click", () => { state.region = "all"; updateSelectedRegionStyle(); renderAll(); });
+    container.parentElement.insertBefore(allBtn, container.nextSibling);
+  }
 }
 
 function updateSelectedRegionStyle() {
   document.querySelectorAll(".region-shape").forEach(el => el.classList.remove("selected"));
   if (state.region !== "all") {
-    const el = document.getElementById(`region-${state.region}`);
-    if (el) el.classList.add("selected");
+    // puede haber más de un elemento para la misma región (p. ej. "east" +
+    // la isla de Madagascar), así que seleccionamos por data-region.
+    document.querySelectorAll(`.region-shape[data-region="${state.region}"]`)
+      .forEach(el => el.classList.add("selected"));
   }
 }
 
