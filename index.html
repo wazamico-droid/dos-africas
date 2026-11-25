@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>África: dos historias posibles (1870–2025)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1>África: dos historias posibles</h1>
+    <p class="subtitle">Una simulación histórica comparada, 1870–2025</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============== PANEL DE ESCENARIOS ============== -->
+  <section class="panel scenario-panel">
+    <div class="scenario-toggle">
+      <button id="btn-scenario-a" class="scenario-btn active" data-scenario="A">
+        <span class="dot dot-a"></span> Escenario A — con colonización
+      </button>
+      <button id="btn-scenario-b" class="scenario-btn" data-scenario="B">
+        <span class="dot dot-b"></span> Escenario B — sin colonización (hipótesis)
+      </button>
+      <button id="btn-scenario-both" class="scenario-btn" data-scenario="both">
+        Comparar ambos
+      </button>
+    </div>
+    <p class="scenario-note">
+      El Escenario A reconstruye la evolución histórica documentada. El Escenario B es una
+      <strong>hipótesis razonada, no una verdad histórica</strong>: antes de 1885 ambos escenarios
+      comparten la misma base, y a partir de ahí B se construye ajustando los parámetros del panel
+      de la derecha sobre las tasas de cambio reales de A. África podría haber estado mejor, igual
+      o peor sin colonización — el modelo no impone ninguna de las tres conclusiones.
+    </p>
+  </section>
+
+  <div class="grid-main">
+
+    <!-- ============== MAPA + LÍNEA TEMPORAL ============== -->
+    <section class="panel map-panel">
+      <h2>Mapa de regiones</h2>
+      <div id="africa-map-container"></div>
+      <p class="hint">Haz clic en una región para centrar los gráficos en ella, o deja "Todo el continente" para la vista agregada.</p>
+
+      <h2 class="timeline-title">Línea temporal</h2>
+      <div class="timeline-controls">
+        <button id="btn-play" aria-label="Reproducir">▶</button>
+        <input type="range" id="year-slider" min="1870" max="2025" value="2025" step="1">
+        <span id="year-label">2025</span>
+      </div>
+      <div class="timeline-ticks">
+        <span>1870</span><span>1913</span><span>1950</span><span>1973</span><span>2000</span><span>2025</span>
+      </div>
+    </section>
+
+    <!-- ============== INDICADORES ============== -->
+    <section class="panel indicators-panel">
+      <h2 id="region-heading">Todo el continente</h2>
+      <div class="indicator-grid">
+        <div class="indicator-card" id="card-gdp">
+          <h3>Economía</h3>
+          <div class="indicator-value" id="val-gdp">–</div>
+          <div class="indicator-unit">US$ int'l 1990 per cápita</div>
+        </div>
+        <div class="indicator-card" id="card-pop">
+          <h3>Población y calidad de vida</h3>
+          <div class="indicator-value" id="val-pop">–</div>
+          <div class="indicator-unit">millones · esperanza de vida: <span id="val-life">–</span> años</div>
+        </div>
+        <div class="indicator-card" id="card-tech">
+          <h3>Tecnología e infraestructuras</h3>
+          <div class="indicator-value" id="val-tech">–</div>
+          <div class="indicator-unit">índice 0–100</div>
+        </div>
+        <div class="indicator-card" id="card-inst">
+          <h3>Desarrollo político y social</h3>
+          <div class="indicator-value" id="val-inst">–</div>
+          <div class="indicator-unit">índice 0–100 · alfabetización: <span id="val-lit">–</span>%</div>
+        </div>
+      </div>
+      <p class="data-flag" id="data-flag"></p>
+    </section>
+
+  </div>
+
+  <!-- ============== GRÁFICOS COMPARATIVOS ============== -->
+  <section class="panel charts-panel">
+    <h2>Evolución comparada (1870–2025)</h2>
+    <div class="charts-grid">
+      <div class="chart-box"><canvas id="chart-gdp"></canvas></div>
+      <div class="chart-box"><canvas id="chart-pop"></canvas></div>
+      <div class="chart-box"><canvas id="chart-tech"></canvas></div>
+      <div class="chart-box"><canvas id="chart-inst"></canvas></div>
+    </div>
+  </section>
+
+  <!-- ============== PANEL DE CONFIGURACIÓN ============== -->
+  <section class="panel config-panel">
+    <h2>Panel de configuración — parámetros del Escenario B</h2>
+    <p class="hint">
+      Estos parámetros ajustan la trayectoria hipotética sin colonización. Los valores por defecto
+      están calibrados a partir de comparadores históricos reales (ver documentación). Muévelos para
+      explorar hipótesis más optimistas o más pesimistas: el modelo permite ambas.
+    </p>
+    <div class="config-grid">
+      <label>
+        Año de divergencia (inicio del reparto colonial)
+        <input type="range" id="param-divergence" min="1850" max="1914" step="1" value="1885">
+        <span class="param-value" id="val-divergence">1885</span>
+      </label>
+      <label>
+        Diferencial de crecimiento del PIB per cápita (pp/año frente al histórico)
+        <input type="range" id="param-gdp" min="-0.5" max="1.2" step="0.05" value="0.3">
+        <span class="param-value" id="val-gdp-param">+0.30</span>
+      </label>
+      <label>
+        Diferencial de esperanza de vida en 2025 (años)
+        <input type="range" id="param-life" min="-3" max="4" step="0.5" value="1">
+        <span class="param-value" id="val-life-param">+1.0</span>
+      </label>
+      <label>
+        Factor de difusión tecnológica autónoma (×)
+        <input type="range" id="param-tech" min="0.5" max="1.4" step="0.05" value="0.85">
+        <span class="param-value" id="val-tech-param">0.85×</span>
+      </label>
+      <label>
+        Diferencial de estabilidad institucional en 2025 (puntos de índice)
+        <input type="range" id="param-inst" min="-10" max="20" step="1" value="6">
+        <span class="param-value" id="val-inst-param">+6</span>
+      </label>
+      <label>
+        Diferencial de población en 2025 (millones)
+        <input type="range" id="param-pop" min="-100" max="250" step="10" value="60">
+        <span class="param-value" id="val-pop-param">+60 M</span>
+      </label>
+    </div>
+    <button id="btn-reset-params">Restablecer valores por defecto</button>
+  </section>
+
+  <!-- ============== RESULTADOS FINALES 2025 ============== -->
+  <section class="panel results-panel">
+    <h2>Resultados finales — 2025</h2>
+    <div id="results-2025" class="results-grid"></div>
+    <p class="hint" style="margin-top:10px;">
+      Recuerda: la columna "Escenario B" es la salida de un modelo con los parámetros actuales del
+      panel de configuración, no una predicción. Cambia los parámetros y vuelve a mirar esta pantalla.
+    </p>
+  </section>
+
+  <!-- ============== METODOLOGÍA Y FUENTES ============== -->
+  <section class="panel sources-panel">
+    <h2>Metodología, ecuaciones y fuentes</h2>
+    <p>
+      Esta aplicación distingue tres tipos de dato en todo momento (ver el indicador de color junto
+      a cada cifra):
+    </p>
+    <ul class="legend-list">
+      <li><span class="tag tag-historical">Histórico</span> — procede directamente de una serie publicada.</li>
+      <li><span class="tag tag-estimated">Estimado</span> — extrapolación o reconstrucción académica de un periodo con datos escasos (p. ej. África antes de 1950).</li>
+      <li><span class="tag tag-hypothesis">Hipótesis</span> — resultado del modelo del Escenario B, dependiente de los parámetros que tú elijas.</li>
+    </ul>
+    <p>Para la descripción completa de las ecuaciones, los parámetros y la bibliografía, consulta
+       <a href="README.md" target="_blank">README.md</a>, incluido en este mismo proyecto.</p>
+    <div id="references-list"></div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Proyecto educativo. El Escenario B es una hipótesis exploratoria y no debe interpretarse como un
+     relato histórico alternativo definitivo. Ver README.md para limitaciones del modelo.</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="model.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
