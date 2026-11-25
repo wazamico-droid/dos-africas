@@ -304,8 +304,8 @@ const REFERENCES = [
   },
   {
     key: "prados2012",
-    text: "Prados de la Escosura, L. (2012). Output per head in pre-independence Africa: quantities and conjectures. Economic History of Developing Regions, 27(2).",
-    url: "https://doi.org/10.1080/20780389.2012.745731"
+    text: "Prados de la Escosura, L. (2012). Output per head in pre-independence Africa: quantitative conjectures. Economic History of Developing Regions, 27(2), 1-36.",
+    url: "https://doi.org/10.1080/20780389.2012.745659"
   },
   {
     key: "frankema2015",
@@ -364,13 +364,13 @@ const REFERENCES = [
   },
   {
     key: "coquery2005",
-    text: "Coquery-Vidrovitch, C. (2005). The History of African Cities South of the Sahara. Markus Wiener Publishers.",
-    url: ""
+    text: "Coquery-Vidrovitch, C. (2005). The History of African Cities South of the Sahara: From the Origins to Colonization. Markus Wiener Publishers.",
+    url: "https://catalog.nypl.org/search/i1558763031"
   },
   {
     key: "manning2014",
-    text: "Manning, P. (2014). African Population: Projections, 1850-1960. En: Africa's Development in Historical Perspective, Cambridge University Press.",
-    url: ""
+    text: "Manning, P. (2014). African Population, 1650-2000: Comparisons and Implications of New Estimates. En: Akyeampong, E., Bates, R.H., Nunn, N. & Robinson, J. (eds.), Africa's Development in Historical Perspective, Cambridge University Press, pp. 131-150.",
+    url: "https://www.cambridge.org/core/product/identifier/CBO9781139644594A011/type/BOOK_PART"
   },
   {
     key: "riley2005",
